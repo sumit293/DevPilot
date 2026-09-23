@@ -11,22 +11,32 @@ import DevPilot.backend.entity.User;
 import DevPilot.backend.services.UserService;
 import lombok.RequiredArgsConstructor;
 
-@Service 
-@RequiredArgsConstructor 
-public class gitHubOAuth2UserService  implements OAuth2UserService<OAuth2UserRequest, OAuth2User>{
+@Service
+@RequiredArgsConstructor
+public class gitHubOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
+
     private final UserService userService;
+
     private final DefaultOAuth2UserService delegate = new DefaultOAuth2UserService();
 
     @Override
-    public OAuth2User  loadUser(OAuth2UserRequest userRequest)  throws  OAuth2AuthenticationException{
-        OAuth2User githubUser= delegate.loadUser(userRequest);
-      String accessToken = userRequest.getAccessToken().getTokenValue();
-     String scopes   =  userRequest.getAccessToken().getScopes() !=null
-     ? String.join(",", userRequest.getAccessToken().getScopes())
-     : "read:user,repo";
+    public OAuth2User loadUser(OAuth2UserRequest userRequest)
+            throws OAuth2AuthenticationException {
 
-     User user =  userService.userFromGithub(githubUser.getAttribute(), accessToken, scopes);
-     return new AppUserPrincipal(user, githubUser.getAttributes());
+        OAuth2User githubUser = delegate.loadUser(userRequest);
+
+        String accessToken = userRequest.getAccessToken().getTokenValue();
+
+        String scopes = userRequest.getAccessToken().getScopes() != null
+                ? String.join(",", userRequest.getAccessToken().getScopes())
+                : "read:user,repo";
+
+        User user = userService.userFromGithub(
+                githubUser.getAttributes(),
+                accessToken,
+                scopes
+        );
+
+        return new AppUserPrincipal(user, githubUser);
     }
-
 }

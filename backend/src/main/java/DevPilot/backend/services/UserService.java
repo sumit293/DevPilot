@@ -1,5 +1,6 @@
 package DevPilot.backend.services;
 
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.security.crypto.encrypt.TextEncryptor;
@@ -18,10 +19,27 @@ public class UserService {
     public final UserRepository userRepository;
     public final TextEncryptor tokenEncryptor;
 
-    public User userFromGithub(){
-        throw  new UnsupportedOperationException("unemplemented method   user not found ");
+    public User userFromGithub(Map<String, Object> attributes, String accessToken, String scopes) {
+        long githunId = toLong(attributes.get("id"));
+        String login = String.valueOf(attributes.get("login"));
+        String name = String.valueOf(attributes.get("name"))
+                != "null" ? String.valueOf(attributes.get("name")) : null;
 
+                String avatarUrl =  attributes.get("avatar_url") !=null
+                ?String.valueOf(attributes.get("avatar_url")) : null;
+
+                String encrypetdToken =  tokenEncryptor.encrypt(accessToken);
+
+                User user = userRepository.findByGithubId(githunId).orElseGet(User::new);
+                user.setGithubId(githunId);
+                user.setGithubUsername(login);
+        user.setDisplayName(name);
+                user.setAvatarUrl(avatarUrl);
+                user.setAccessToken(encrypetdToken);
+                user.setTokenScopes(scopes);
+                return userRepository.save(user);
     }
+
 
     @Transactional (readOnly = true)
     public User requiredById(UUID id){
