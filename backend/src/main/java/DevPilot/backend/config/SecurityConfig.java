@@ -9,6 +9,9 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -16,15 +19,20 @@ import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 
+import DevPilot.backend.security.gitHubOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
+@RequiredArgsConstructor 
 public class SecurityConfig {
 
-    private final AuthenticationSuccessHandler oauth2SuccessHandler;
-    private final AuthenticationFailureHandler oauth2FailureHandler;
+
+
+    private gitHubOAuth2UserService gitHubOAuth2UserService1;
+    private  AuthenticationSuccessHandler oauth2SuccessHandler;
+    private  AuthenticationFailureHandler oauth2FailureHandler;
+    private  OAuth2UserService<OAuth2UserRequest, OAuth2User> gitHubOAuth2UserService;
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -60,7 +68,7 @@ public class SecurityConfig {
 
             .oauth2Login(oauth -> oauth
                 .userInfoEndpoint(userInfo -> userInfo
-                    .userService(gitHubOAuth2UserService)
+                    .userService(gitHubOAuth2UserService1)
                 )
                 .successHandler(oauth2SuccessHandler)
                 .failureHandler(oauth2FailureHandler)
