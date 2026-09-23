@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import DevPilot.backend.entity.User;
 
 public interface UserRepository extends JpaRepository<User, UUID> {
+    
     Optional<User> findByGithubId(long githubId);
     
 }

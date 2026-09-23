@@ -18,6 +18,11 @@ public class UserService {
     public final UserRepository userRepository;
     public final TextEncryptor tokenEncryptor;
 
+    public User userFromGithub(){
+        throw  new UnsupportedOperationException("unemplemented method   user not found ");
+
+    }
+
     @Transactional (readOnly = true)
     public User requiredById(UUID id){
         return  userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found with id: " + id));
@@ -35,6 +40,7 @@ public class UserService {
         }
         return Long.parseLong(value.toString());
     }
+    
 
     
 }
